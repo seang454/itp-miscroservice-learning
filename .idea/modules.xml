@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/687032535/account-query-service.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/687032535/account-query-service.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/account-query-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/account-query-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/account-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/account-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/customer-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/customer-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/front-bff.main.iml" filepath="$PROJECT_DIR$/.idea/modules/front-bff.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateway-server.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateway-server.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iam-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/iam-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/itp-microservice.iml" filepath="$PROJECT_DIR$/.idea/itp-microservice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pipeline-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/pipeline-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pipeline-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/pipeline-service.test.iml" />
+    </modules>
+  </component>
+</project>

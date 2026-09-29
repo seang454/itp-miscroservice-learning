@@ -1,0 +1,110 @@
+spring:
+  application:
+    name: gateway-server
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: qwer
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+              lower-case-service-id: true
+          httpclient:
+            connect-timeout: 1000
+            response-timeout: 5s
+          routes:
+            - id: pipeline
+              uri: lb://pipeline
+              predicates:
+                - Path=/pipeline/**
+              filters:
+                - RewritePath=/pipeline/(?<segment>.*),/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
+
+#                - name: Retry
+#                  args:
+#                    retries: 5
+#                    statuses: BAD_GATEWAY
+#                    methods: GET
+#                    backoff:
+#                      firstBackoff: 10ms
+#                      maxBackoff: 50ms
+#                      factor: 2
+#                      basedOnPreviousValue: false
+            #                - name: CircuitBreaker
+            #                  args:
+            #
+            #                    name: pipelineCircuitBreaker
+            #                    fallbackUri: forward:/fallback/pipeline
+            #                    fallbackUri: forward:/fallback/pipeline/client/account/secured
+            #                    statusCode:
+            #                      - 500
+
+
+            - id: account
+              uri: lb://account
+              predicates:
+                - Path=/account-service/**
+#              filters:
+#                - RewritePath=/account-service/(?<segment>.*),/$\{segment}
+#                - name: CircuitBreaker
+#                  args:
+#                    name: accountCircuitBreaker
+#                    fallbackUri: forward:/fallback/pipeline/client/account/secured
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090
+      client:
+        provider:
+          itp-standard:
+            issuer-uri: http://localhost:9090
+        registration:
+          itp-standard:
+            provider: itp-standard
+            client-id: itp-standard
+            client-secret: qwerqwer
+            redirect-uri: http://localhost:15999/login/oauth2/code/itp-standard
+            authorization-grant-type:
+              - authorization_code
+            scope:
+              - openid # Auto issue access token
+              - profile # Get profile
+              - email # Get email
+# Resilience4J
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        failure-rate-threshold: 50 # Percentages
+        permitted-number-of-calls-in-half-open-state: 2
+        wait-duration-in-open-state: 10000
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
+
+server:
+  port: 15999
+

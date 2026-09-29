@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: front-bff
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+          - id: frontbff
+            uri: http://localhost:3000
+            predicates:
+              - Path=/**
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Headers
+            - SaveSession
+            - TokenRelay=
+  #            filters:
+#              - TokenRelay=
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090
+      client:
+        provider:
+          itp-front-bff:
+            issuer-uri: http://localhost:9090
+        registration:
+          itp-front-bff:
+            provider: itp-front-bff
+            client-id: itp-front-bff
+            client-secret: qwerqwer
+            redirect-uri: http://localhost:15990/login/oauth2/code/itp-front-bff
+            authorization-grant-type:
+              - authorization_code
+            scope:
+              - openid # Auto issue access token
+              - profile # Get profile
+              - email # Get email
+server:
+  port: 15990
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

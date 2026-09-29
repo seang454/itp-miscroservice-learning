@@ -1,0 +1,12 @@
+{
+	"type": "record",
+	"name": "Key",
+	"namespace": "oracle1.CORE_BANKING.RECORD_XML",
+	"fields": [
+		{
+			"name": "RECID",
+			"type": "string"
+		}
+	],
+	"connect.name": "oracle1.CORE_BANKING.RECORD_XML.Key"
+}

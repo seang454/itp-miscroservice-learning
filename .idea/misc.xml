@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$USER_HOME$/Downloads/account-service/account-service" />
+    <file type="web" url="file://$PROJECT_DIR$/../../itp-banking/common" />
+    <file type="web" url="file://$PROJECT_DIR$/account-service" />
+    <file type="web" url="file://$PROJECT_DIR$/admin-bff" />
+    <file type="web" url="file://$PROJECT_DIR$/configserver" />
+    <file type="web" url="file://$PROJECT_DIR$/customer-service" />
+    <file type="web" url="file://$PROJECT_DIR$/eurekaservice" />
+    <file type="web" url="file://$PROJECT_DIR$/front-bff" />
+    <file type="web" url="file://$PROJECT_DIR$/gateway-server" />
+    <file type="web" url="file://$PROJECT_DIR$/itp-identity-service" />
+    <file type="web" url="file://$PROJECT_DIR$/pipeline-service" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="21" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

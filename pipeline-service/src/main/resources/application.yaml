@@ -1,0 +1,174 @@
+spring:
+  application:
+    name: pipeline
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    function:
+      definition: processProduct;processMessage;processProductDetail;productCdcConsumer;processUser;captureDebeziumRecordXml;consumeDbzEvent
+    stream:
+      bindings:
+        consumeDbzEvent-in-0:
+          destination: oracle1.CORE_BANKING.RECORD_XML
+          group: user-consumer-group
+          content-type: application/*+avro
+        consumeDbzEvent-out-0:
+          destination: oracle1.CORE_BANKING.RECORD_XML
+          content-type: application/json
+        captureDebeziumRecordXml-in-0:
+          destination: oracle1.CORE_BANKING.RECORD_XML
+          group: user-consumer-group
+          content-type: application/*+avro
+        processUser-in-0:
+          destination: oracle1.CORE_BANKING.RECORD_XML
+          group: user-consumer-group
+          content-type: application/*+avro
+        productCdcConsumer-in-0:
+          destination: dbserver1.public.products
+          group: product-cdc-group
+          content-type: application/*+avro
+        productCdcConsumer-out-0:
+          destination: processed-messages-avro
+          content-type: application/json
+        processProductDetail-in-0:
+          destination: product-detail # topic_name
+          group: monitor-group2 # consumer_group_id
+          content-type: application/json
+        processProduct-in-0:
+          destination: test-product # topic_name
+          group: monitor-group # consumer_group_id
+          content-type: application/json
+        processMessage-in-0:
+          destination: test-topic
+        processProductDetail-out-0:
+           destination: processed-messages-topic
+      kafka:
+        binder:
+          brokers: localhost:29092,localhost:29094,localhost:29096
+          configuration:
+            schema.registry.url: http://schema-registry:8081
+            auto.offset.reset: earliest
+        bindings:
+          # Avro-specific configuration for Debezium consumer
+          consumeDbzEvent-in-0:
+            consumer:
+              configuration:
+                key.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                value.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                spring.deserializer.key.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: false
+          captureDebeziumRecordXml-in-0:
+            consumer:
+              configuration:
+                key.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                value.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                spring.deserializer.key.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: true
+          processUser-in-0:
+            consumer:
+              configuration:
+                key.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                value.deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+                spring.deserializer.key.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                spring.deserializer.value.delegate.class: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: false
+#              max-attempts: 1
+          processDebeziumProduct-in-0:
+            consumer:
+              configuration:
+                key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                schema.registry.url: http://localhost:8081
+                specific.avro.reader: false
+#          configuration:
+#            schema.registry.url: http://schema-registry:8081
+#            key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#            value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+#            specific.avro.reader: false
+#            auto.offset.reset: earliest
+  datasource:
+    url: jdbc:postgresql://localhost:16851/cdc_db
+    username: itpusr
+    password: itp@168
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090
+      client:
+        provider:
+          itp-standard:
+            issuer-uri: http://localhost:9090
+        registration:
+          itp-standard:
+            provider: itp-standard
+            client-id: itp-standard
+            client-secret: qwerqwer
+            redirect-uri: http://localhost:15999/login/oauth2/code/itp-standard
+            authorization-grant-type: client_credentials
+            scope:
+              - openid # Auto issue access token
+              - profile # Get profile
+              - email # Get email
+
+
+
+
+
+server:
+  port: 20262
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      accountCB:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        permitted-number-of-calls-in-half-open-state: 2
+        wait-duration-in-open-state: 10000
+#    configs:
+#      default:
+#        sliding-window-size: 10
+#        failure-rate-threshold: 50
+#        permitted-number-of-calls-in-half-open-state: 2
+#        wait-duration-in-open-state: 10000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+logging:
+  level:
+    co.istad.pipeline: DEBUG

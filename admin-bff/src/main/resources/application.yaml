@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: admin-bff
+  config:
+    import: optional:configserver:http://localhost:8888
+  profiles:
+    active: dev
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: adminbff
+              uri: http://localhost:3001
+              predicates:
+                - Path=/**
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Request-Headers
+            - SaveSession
+            - TokenRelay=
+  #              filters:
+#                - TokenRelay=
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090
+      client:
+        provider:
+          itp-admin-bff:
+            issuer-uri: http://localhost:9090
+        registration:
+          itp-admin-bff:
+            provider: itp-admin-bff
+            client-id: itp-admin-bff
+            client-secret: qwerqwer
+            redirect-uri: http://localhost:15991/login/oauth2/code/itp-admin-bff
+            authorization-grant-type:
+              - authorization_code
+            scope:
+              - openid # Auto issue access token
+              - profile # Get profile
+              - email # Get email
+server:
+  port: 15991
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

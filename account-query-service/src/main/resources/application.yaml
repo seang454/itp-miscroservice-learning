@@ -1,0 +1,64 @@
+axon:
+  axonserver:
+    enabled: false
+  kafka:
+    bootstrap-servers: localhost:29092,localhost:29094,localhost:29096
+    default-topic: Axon.AccountCQRS.Events
+    client-id: kafka-axon-account-query
+    message-converter-mode: default # alternative is cloud_event <https://cloudevents.io/>
+    properties:
+      security.protocol: PLAINTEXT # PLAINTEXT for no security purpose
+    consumer:
+      event-processor-mode: subscribing
+  serializer:
+    general: jackson
+    events: jackson
+    messages: jackson
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true
+
+server:
+  port: 20263
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:16851/db_account_query
+    password: itp@168
+    username: itpusr
+  liquibase:
+    enabled: true
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:16851/db_account_query
+    user: itpusr
+    password: itp@168
+  r2dbc:
+    url: r2dbc:postgresql://localhost:16851/db_account_query
+    username: itpusr
+    password: itp@168
+  application:
+    name: account-query
+  config:
+    import: optional:configserver:http://localhost:8888
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:9090
