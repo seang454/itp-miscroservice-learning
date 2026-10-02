@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/metalbear-co/mirrord/main/mirrord-schema.json",
+  "target": {
+    "path": null,
+    "namespace": "monitoring"
+  },
+  "feature": {
+    "network": {
+      "incoming": "mirror",
+      "outgoing": true,
+      "dns": true
+    },
+    "env": true,
+    "fs": "local"
+  }
+}

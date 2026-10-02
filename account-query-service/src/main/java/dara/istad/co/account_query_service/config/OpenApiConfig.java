@@ -8,13 +8,18 @@ import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RequestPredicates;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
+import java.net.URI;
 import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
 
-    @Value("${server.port:20262}")
+    @Value("${server.port:20263}")
     private String serverPort;
 
     @Bean
@@ -33,5 +38,16 @@ public class OpenApiConfig {
                 .servers(List.of(
                         new Server().url("http://localhost:" + serverPort).description("Local Development Server")
                 ));
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> swaggerRouter() {
+        URI swaggerUri = URI.create("/webjars/swagger-ui/index.html?url=/v3/api-docs");
+        return RouterFunctions.route(
+                RequestPredicates.GET("/swagger-ui.html")
+                        .or(RequestPredicates.GET("/swagger-ui"))
+                        .or(RequestPredicates.GET("/swagger-ui/")),
+                req -> ServerResponse.temporaryRedirect(swaggerUri).build()
+        );
     }
 }
